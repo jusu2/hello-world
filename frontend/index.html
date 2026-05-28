@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .container { max-width: 400px; }
+    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+    button { padding: 8px 20px; cursor: pointer; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body ng-controller="MainController">
+  <div class="container">
+    <h2>输入内容</h2>
+    <input type="text" ng-model="content" placeholder="请输入字符串">
+    <button ng-click="submit()">提交</button>
+    <p ng-class="{'success': success, 'error': !success}">{{ message }}</p>
+  </div>
+
+  <script>
+    angular.module('app', [])
+      .controller('MainController', function($scope, $http) {
+        $scope.content = '';
+        $scope.message = '';
+        $scope.success = true;
+
+        $scope.submit = function() {
+          if (!$scope.content) {
+            $scope.message = '请输入内容';
+            $scope.success = false;
+            return;
+          }
+          $http.put('/api/messages', { content: $scope.content })
+            .then(function(res) {
+              $scope.message = '保存成功: ' + res.data.content;
+              $scope.success = true;
+              $scope.content = '';
+            })
+            .catch(function(err) {
+              $scope.message = '保存失败: ' + (err.data?.error || '未知错误');
+              $scope.success = false;
+            });
+        };
+      });
+  </script>
+</body>
+</html>

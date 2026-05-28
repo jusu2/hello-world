@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// 初始化数据库链接
 	if err := database.Init(); err != nil {
 		panic(err)
 	}
@@ -16,8 +15,11 @@ func main() {
 
 	r := gin.Default()
 
-	// 然后简单的传一个字符串 然后存到pgsql里面
-	r.PUT("/messages", func(c *gin.Context) {
+	// 静态文件：serve frontend 目录
+	r.Static("/", "../frontend")
+
+	// API
+	r.PUT("/api/messages", func(c *gin.Context) {
 		var req struct {
 			Content string `json:"content" binding:"required"`
 		}
